@@ -816,8 +816,13 @@ function render() {
 function handleEditorInput() {
 
     console.log(
-        "EDITOR_HTML:",
+        "HTML:",
         editor.innerHTML
+    );
+
+    console.log(
+        "TEXT:",
+        editor.textContent
     );
 
     syncItemsFromDom();
@@ -830,6 +835,22 @@ function handleEditorInput() {
 editor.addEventListener(
     "input",
     handleEditorInput
+);
+
+editor.addEventListener(
+    "beforeinput",
+    (e) => {
+
+        console.log(
+            "beforeinput",
+            e.inputType
+        );
+
+        console.log(
+            editor.innerHTML
+        );
+
+    }
 );
 
 editor.addEventListener(
