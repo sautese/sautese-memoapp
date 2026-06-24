@@ -24,15 +24,28 @@ jobs:
 
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            src-tauri -> target
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build Tauri (ARM)
         run: npm run tauri build -- --target aarch64-apple-darwin
+
+      - name: Locate DMG
+        id: find_dmg
+        run: |
+          echo "Searching DMG..."
+          find src-tauri/target -type f -name "*.dmg" | tee dmg.txt
+          echo "DMG_PATH<<EOF" >> $GITHUB_OUTPUT
+          cat dmg.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Upload DMG
         uses: actions/upload-artifact@v4
         with:
           name: mac-arm-dmg
-          path: src-tauri/target/release/bundle/dmg/*.dmg
+          path: |
+            src-tauri/target/**/*.dmg
