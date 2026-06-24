@@ -328,9 +328,15 @@ function syncItemsFromDom() {
     const syncedTodayItems = [];
 
     domItems.forEach(el => {
+
         if (!el.memoItem) return;
 
-        el.memoItem.text = el.textContent;
+        const cleanText =
+            (el.innerText || "")
+                .replace(/\u200b/g, "")
+                .replace(/\n/g, "");
+
+        el.memoItem.text = cleanText;
 
         syncedTodayItems.push(el.memoItem);
     });
@@ -722,47 +728,33 @@ function render() {
 
     requestAnimationFrame(() => {
 
-        if (!currentFocusItem) {
+    const visibleItems =
+        getVisibleItemElements();
 
-            const visibleItems =
-                getVisibleItemElements();
+    if (visibleItems.length === 0) return;
 
-            if (visibleItems.length > 0) {
+    let targetEl = null;
 
-                currentFocusItem =
-                    visibleItems[
-                        visibleItems.length - 1
-                    ].memoItem;
+    if (currentFocusItem) {
 
-                moveCaretToEnd(
-                    visibleItems[
-                    visibleItems.length - 1
-                    ],
-                    false
-                );
-            }
-
-            return;
-        }
-
-        const visibleItems =
-            getVisibleItemElements();
-
-        const targetEl =
+        targetEl =
             visibleItems.find(
                 el => el.memoItem === currentFocusItem
             );
+    }
 
-        if (targetEl) {
+    if (!targetEl) {
+        targetEl = visibleItems[visibleItems.length - 1];
+        currentFocusItem = targetEl.memoItem;
+    }
 
-            moveCaretToEnd(
-                targetEl,
-                false
-            );
+    // 🔥关键修复：避免render瞬间光标压到counter层
+    setTimeout(() => {
 
-            return;
-        }
-    });
+        moveCaretToEnd(targetEl, false);
+
+    }, 0);
+});
 
     updateDateLabel();
 }
@@ -1003,7 +995,7 @@ editor.addEventListener(
             save();
 
             render();
-
+            
             requestAnimationFrame(() => {
 
                 const target =
