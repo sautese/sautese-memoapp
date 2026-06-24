@@ -5,6 +5,8 @@ const { invoke } = window.__TAURI__.core;
 editor.contentEditable =
     true;
 
+document.execCommand("defaultParagraphSeparator", false, "div");
+
 let data = {};
 
 let dirty = false;
