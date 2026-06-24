@@ -55,7 +55,7 @@ async function saveMemoToFile() {
 
 function isPrimaryModifierPressed(e) {
 
-    return e.ctrlKey;
+    return e.ctrlKey || e.metaKey;
 }
 
 function getToday() {
