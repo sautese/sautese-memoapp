@@ -168,9 +168,11 @@ body {
 
 .item {
 
+    display: block;
+
     position: relative;
 
-    padding-left: 22px;
+    padding-left: 38px;
 
     min-height: 32px;
 
@@ -183,6 +185,8 @@ body {
     white-space: pre-wrap;
 
     word-break: break-word;
+
+    -webkit-user-modify: read-write-plaintext-only;
 }
 
 
@@ -192,13 +196,19 @@ body {
 
     position: absolute;
 
-    left: -11px;
+    left: 0;
 
-    width: 36px;
+    top: 0;
 
-    text-align: center;
+    width: 28px;
 
-    white-space: nowrap;
+    text-align: right;
+
+    pointer-events: none;
+
+    user-select: none;
+
+    -webkit-user-select: none;
 
     color: #000;
 }
