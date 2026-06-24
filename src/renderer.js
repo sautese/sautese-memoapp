@@ -815,6 +815,11 @@ function render() {
 
 function handleEditorInput() {
 
+    console.log(
+        "EDITOR_HTML:",
+        editor.innerHTML
+    );
+
     syncItemsFromDom();
 
     updateCurrentFocusFromSelection();
