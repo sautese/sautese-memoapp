@@ -720,37 +720,38 @@ function render() {
         );
     }
 
-        requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+
+        if (!currentFocusItem) {
+
+            const visibleItems =
+                getVisibleItemElements();
+
+            if (visibleItems.length > 0) {
+
+                currentFocusItem =
+                    visibleItems[
+                        visibleItems.length - 1
+                    ].memoItem;
+
+                moveCaretToEnd(
+                    visibleItems[
+                    visibleItems.length - 1
+                    ],
+                    false
+                );
+            }
+
+            return;
+        }
 
         const visibleItems =
             getVisibleItemElements();
 
-        if (!visibleItems.length) {
-            return;
-        }
-
-        let targetEl = null;
-
-        if (currentFocusItem) {
-
-            targetEl =
-                visibleItems.find(
-                    el => el.memoItem === currentFocusItem
-                ) || null;
-
-        }
-
-        if (!targetEl) {
-
-            targetEl =
-                visibleItems[
-                    visibleItems.length - 1
-                ];
-
-            currentFocusItem =
-                targetEl.memoItem;
-
-        }
+        const targetEl =
+            visibleItems.find(
+                el => el.memoItem === currentFocusItem
+            );
 
         if (targetEl) {
 
@@ -759,8 +760,8 @@ function render() {
                 false
             );
 
+            return;
         }
-
     });
 
     updateDateLabel();
@@ -815,16 +816,6 @@ function render() {
 
 function handleEditorInput() {
 
-    console.log(
-        "HTML:",
-        editor.innerHTML
-    );
-
-    console.log(
-        "TEXT:",
-        editor.textContent
-    );
-
     syncItemsFromDom();
 
     updateCurrentFocusFromSelection();
@@ -835,22 +826,6 @@ function handleEditorInput() {
 editor.addEventListener(
     "input",
     handleEditorInput
-);
-
-editor.addEventListener(
-    "beforeinput",
-    (e) => {
-
-        console.log(
-            "beforeinput",
-            e.inputType
-        );
-
-        console.log(
-            editor.innerHTML
-        );
-
-    }
 );
 
 editor.addEventListener(
@@ -885,9 +860,6 @@ editor.addEventListener(
         if (!item) {
             return;
         }
-
-                syncItemsFromDom();
-        updateCurrentFocusFromSelection();
 
         if (
             !isPrimaryModifierPressed(e) &&
@@ -1521,9 +1493,6 @@ document.addEventListener(
 
         e.preventDefault();
 
-        syncItemsFromDom();
-        updateCurrentFocusFromSelection();
-
         const d =
             new Date(currentDate);
 
@@ -1551,21 +1520,9 @@ document.addEventListener(
 
         }
 
-        const y =
-            d.getFullYear();
-
-        const m =
-            String(
-                d.getMonth() + 1
-            ).padStart(2, "0");
-
-        const day =
-            String(
-                d.getDate()
-            ).padStart(2, "0");
-
         currentDate =
-            `${y}-${m}-${day}`;
+            d.toISOString()
+                .slice(0, 10);
 
         currentFocusItem =
             focusMap[currentDate] ||
@@ -1574,6 +1531,7 @@ document.addEventListener(
         getCurrentItems();
 
         save();
+
         render();
 
         setTimeout(() => {
@@ -1591,12 +1549,14 @@ document.addEventListener(
                         );
 
                 if (target) {
+
                     target.scrollIntoView({
 
                         block: "nearest",
                         behavior: "smooth"
 
                     });
+
                 }
 
             });
