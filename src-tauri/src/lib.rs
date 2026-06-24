@@ -1,6 +1,6 @@
 use std::fs;
 use tauri::path::BaseDirectory;
-use tauri::{Manager, PhysicalPosition};
+use tauri::Manager;
 
 use tauri_plugin_global_shortcut::{
     Code,
@@ -98,24 +98,21 @@ pub fn run() {
             // ======================
             // 右上角定位
             // ======================
-            if let Some(monitor) =
-                window.current_monitor().unwrap()
-            {
-                let size =
-                    monitor.size();
+            if let Some(monitor) = window.current_monitor().unwrap() {
 
-                let x =
-                    size.width as i32 - 485;
+                let size = monitor.size();
 
-                let y = 68;
+                let window_size = window.outer_size().unwrap();
 
-                let _ =
-                    window.set_position(
-                        PhysicalPosition::new(
-                            x,
-                            y
-                        )
-                    );
+                let margin_right = 5;
+                let margin_top = 75;
+
+                let x = size.width as i32 - window_size.width as i32 - margin_right;
+                let y = margin_top;
+
+                let _ = window.set_position(
+                    tauri::PhysicalPosition::new(x, y)
+                );
             }
 
             let _ =
