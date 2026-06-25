@@ -5,24 +5,6 @@ const { invoke } = window.__TAURI__.core;
 editor.contentEditable =
     true;
 
-document.execCommand("defaultParagraphSeparator", false, "div");
-
-editor.addEventListener("beforeinput", (e) => {
-
-    if (e.inputType === "insertParagraph") {
-
-        e.preventDefault();
-
-        document.execCommand(
-            "insertHTML",
-            false,
-            "<div class='item'><br></div>"
-        );
-
-    }
-
-});
-
 let data = {};
 
 let dirty = false;
@@ -832,7 +814,11 @@ function render() {
 
 })();
 
-function handleEditorInput() {
+function handleEditorInput(e) {
+
+    if (e && e.isComposing) {
+        return;
+    }
 
     syncItemsFromDom();
 
@@ -843,7 +829,7 @@ function handleEditorInput() {
 
 editor.addEventListener(
     "input",
-    handleEditorInput
+    (e) => handleEditorInput(e)
 );
 
 editor.addEventListener(
@@ -864,6 +850,10 @@ document.addEventListener(
 editor.addEventListener(
     "keydown",
     (e) => {
+
+        if (e.isComposing) {
+            return;
+        }
 
         const active =
             getActiveItemElement();
